@@ -72,8 +72,7 @@ def visualize_facial_landmarks(image, shape, colors=None, alpha=0.75):
     # return the output image
     print(facial_features_cordinates)
     image_feature_data={"image_feature_data":facial_features_cordinates}
-    fname="landmarks_features.txt"
-    np.set_printoptions(threshold=np.inf, linewidth=np.inf)  # turn off summarization, line-wrapping
+    fname="output/landmarks_features.txt"
     with open(fname, 'w') as f:
         f.write(str(image_feature_data))
     return output
@@ -111,4 +110,3 @@ if __name__=="__main__":
     rects = detector(gray, 1)
     
     face_detection(rects)
-    
