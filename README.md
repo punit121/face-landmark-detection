@@ -1,9 +1,9 @@
 ## facial landmarks recognition 
 
-![My Face](https://i.imgur.com/7IIOka9.png)
+![My Face](punit.jpeg)
 
 ### Dependencies 
 `pip install numpy opencv-python dlib imutils`
 
 ### Run
-`python main.py`
+`python main.py --image punit.jpeg`
