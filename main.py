@@ -6,7 +6,6 @@ import dlib
 import imutils
 import argparse
 
- 
 facial_features_cordinates = {}
 
 # define a dictionary that maps the indexes of the facial
@@ -20,6 +19,22 @@ FACIAL_LANDMARKS_INDEXES = dict([
     ("Nose", (27, 35)),
     ("Jaw", (0, 17))
 ])
+
+
+def save_face_landmark_attributes(facial_features_cordinates, img_name):
+    image_feature_data = {"facial_features_cordinates": facial_features_cordinates}
+    # np.savetxt()
+    fname = "output/landmarks_features_" + img_name + ".txt"
+    x = []
+    np.savetxt(fname, x)
+    with open(fname, 'w') as f:
+        f.write(str(image_feature_data))
+
+
+def save_jawline_curve(output):
+    img_location = "output/outImage_" + img_name + ".png"
+    cv2.imwrite(img_location, output)
+    cv2.waitKey(0)
 
 
 def shape_to_numpy_array(shape, dtype="int"):
@@ -56,51 +71,60 @@ def visualize_facial_landmarks(image, shape, colors=None, alpha=0.75):
         pts = shape[j:k]
         facial_features_cordinates[name] = pts
 
-        
-
     ##Draw Jawline
-    jaw=facial_features_cordinates["Jaw"]
+    jaw = facial_features_cordinates["Jaw"]
     for l in range(1, len(jaw)):
-            ptA = tuple(jaw[l - 1])
-            ptB = tuple(jaw[l])
-            cv2.line(overlay, ptA, ptB, colors[i], 2)
-    
-    
+        ptA = tuple(jaw[l - 1])
+        ptB = tuple(jaw[l])
+        cv2.line(overlay, ptA, ptB, colors[i], 2)
+
     # apply the transparent overlay
     cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)
 
     # return the output image
     print(facial_features_cordinates)
-    image_feature_data={"image_feature_data":facial_features_cordinates}
-    fname="output/landmarks_features.txt"
-    with open(fname, 'w') as f:
-        f.write(str(image_feature_data))
-    return output
+
+    return output, facial_features_cordinates
 
 
-def face_detection(rects):   
+def face_detection(rects, img_name):
     # loop over the face detections
+    facial_features_atrributes = []
     for (i, rect) in enumerate(rects):
         # determine the facial landmarks for the face region, then
         # convert the landmark (x, y)-coordinates to a NumPy array
         shape = predictor(gray, rect)
         shape = shape_to_numpy_array(shape)
 
-        output = visualize_facial_landmarks(image, shape)
-        cv2.imwrite("outImage.png", output)
-        cv2.waitKey(0)
-        
-        
-if __name__=="__main__":
+        output, facial_features_cordinates = visualize_facial_landmarks(image, shape)
+        facial_features_atrributes.append(facial_features_cordinates)
+
+    save_face_landmark_attributes(facial_features_atrributes, img_name)
+    save_jawline_curve(output)
+
+
+if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--image", required=True,help="path to input image")
+    ap.add_argument("-i", "--image", required=True, help="path to input image")
     args = vars(ap.parse_args())
     # initialize dlib's face detector
     detector = dlib.get_frontal_face_detector()
     p = "shape_predictor_68_face_landmarks.dat"
 
     predictor = dlib.shape_predictor(p)
+    file_name = args["image"]
+    start_img_name = file_name[::-1].find("/")
+    if (start_img_name == -1):
+        start_img_name = 0
+    else:
+        start_img_name = len(file_name) - start_img_name
 
+    end_img_name = file_name[::-1].find(".")
+    if (end_img_name == -1):
+        end_img_name = 0
+    else:
+        end_img_name = len(file_name) - end_img_name
+    img_name = file_name[start_img_name:end_img_name - 1]
     # load the input image, resize it, and convert it to grayscale
     image = cv2.imread(args["image"])
     image = imutils.resize(image, width=500)
@@ -108,5 +132,5 @@ if __name__=="__main__":
 
     # detect faces in the grayscale image
     rects = detector(gray, 1)
-    
-    face_detection(rects)
+
+    face_detection(rects, img_name)
