@@ -1,12 +1,12 @@
 ## face landmarks recognition 
 
-![My Face](output/outImage_punit.png.png)
+![My Face](output/outImage_punit.png)
 
 ### Dependencies 
 `pip install numpy opencv-python dlib imutils`
 
 ### Run
-`python main.py --image input/punit.jpeg`
+`python main.py --image "input/punit.jpeg"`
 
 #### facial landmark coordinates
 
