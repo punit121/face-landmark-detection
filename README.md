@@ -1,6 +1,9 @@
-## face landmarks recognition 
+## Face Landmarks Recognition 
 
 ![My Face](output/outImage_punit.png)
+
+### About
+This is a python script which uses opencv, dlib, and imutils to extract the 68 facial landmark co-ordinates  and draw the jaw line from it as output. 
 
 ### Dependencies 
 `pip install numpy opencv-python dlib imutils`
